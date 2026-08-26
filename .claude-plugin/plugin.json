@@ -1,6 +1,6 @@
 {
   "name": "self-learning-agents",
-  "description": "Skill-proposal/review/promotion pipeline plus a lessons/registry memory convention that lets a Claude Code agent team turn recurring or high-risk work into reusable, reviewed skills instead of re-solving the same problem from scratch each time.",
+  "description": "A five-role build team (orchestrator, planner, developer, tester, reviewer) plus a skill-proposal/review/promotion pipeline and lessons/registry memory convention that lets the team turn recurring or high-risk work into reusable, reviewed skills instead of re-solving the same problem from scratch each time.",
   "version": "1.0.0",
   "author": {
     "name": "Jerson Castro"

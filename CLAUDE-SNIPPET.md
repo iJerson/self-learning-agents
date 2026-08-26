@@ -1,7 +1,18 @@
-Paste this section into the consuming project's own CLAUDE.md (adjust the
-agent names in brackets to match that project's real agent team).
+Paste this section into the consuming project's own CLAUDE.md. Written for
+this plugin's bundled agent team (`orchestrator`/`planner`/`developer`/
+`tester`/`reviewer`/`skill-reviewer`) — adjust names if you're using
+different agents.
 
 ---
+
+## Implementation work: use the orchestrator agent
+
+For any non-trivial implementation task (a new feature, a build phase, a bug
+fix touching more than a one-line change), delegate to the `orchestrator`
+subagent rather than implementing directly. It drives the
+`developer` → `tester` → `reviewer` loop and gates progress on
+tester+reviewer sign-off. Reserve direct edits for trivial fixes,
+exploration/research, or when the user explicitly asks you to work solo.
 
 ## Continuous improvement
 
@@ -19,10 +30,10 @@ When a reusable workflow is discovered:
 A skill is warranted only for repeated, error-prone, non-obvious, or
 tool-specific work. Record one-off observations as a memory lesson instead.
 
-Policy: any agent may propose; [YOUR IMPLEMENTING AGENT] may draft the
-candidate under `.claude/skills/candidates/`; [YOUR VALIDATING AGENT]
-validates its two validation tasks; `skill-reviewer` approves or rejects;
-only [YOUR LEAD/COORDINATING AGENT] promotes an approved candidate to a live
-top-level skill. This lets the team learn and create new skills without its
-instructions, tools, or privileges drifting silently — no agent skips a step
-in this chain, even under time pressure.
+Policy: any agent may propose; `developer` (or `skill-factory`) may draft
+the candidate under `.claude/skills/candidates/`; `tester` validates its two
+validation tasks; `skill-reviewer` approves or rejects; only `orchestrator`
+promotes an approved candidate to a live top-level skill. This lets the team
+learn and create new skills without its instructions, tools, or privileges
+drifting silently — no agent skips a step in this chain, even under time
+pressure.
