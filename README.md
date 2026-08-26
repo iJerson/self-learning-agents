@@ -31,6 +31,14 @@ approval) using this exact agent team.
 - `hooks/hooks.json` — a `SubagentStop` hook that silently prompts a
   lead/coordinating agent to run the retrospective check after a task
   finishes (see `hooks/skill-retrospective.md` reference below).
+- `agent-viz.html` — standalone, self-contained (no build step, no
+  dependencies) real-time visualizer for `agent_log.jsonl`: hub-and-spoke
+  Canvas view of the orchestrator dispatching to workers, with simultaneous
+  pulsing for parallel dispatches. Copy it into a project root next to
+  `agent_log.jsonl` and serve the directory (e.g. `python3 -m http.server`)
+  to watch the orchestrator work live. Colors unknown agent names via a
+  stable hash, so it works even if you rename/add agents beyond the five
+  this plugin ships.
 
 All five build-team agents are generic — they read a project's own spec
 file, CLAUDE.md, and PROGRESS.md at runtime rather than hardcoding any
@@ -69,7 +77,11 @@ project and they adapt to whatever spec/conventions they find there.
    every agent stop (not just the lead's) roughly quadrupled hook firings
    for no benefit, since only the lead agent can act on the retrospective.
 
-5. **Promotion is manual by design.** No agent — including the ones in this
+5. **Optionally copy `agent-viz.html`** into your project root if you want
+   the live visualizer — it's not auto-installed by the plugin since it's a
+   standalone dev tool, not agent/skill/hook config.
+
+6. **Promotion is manual by design.** No agent — including the ones in this
    plugin — moves a candidate to a top-level `.claude/skills/<name>/`
    automatically. Only your project's lead/coordinating agent (or a human)
    does that, after `skill-reviewer` returns APPROVED. This keeps skill
