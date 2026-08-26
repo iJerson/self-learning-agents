@@ -1,20 +1,41 @@
 # self-learning-agents
 
-A Claude Code plugin that lets an agent team propose, draft, validate, and
-promote reusable skills from recurring or high-risk work instead of
-re-solving the same problem from scratch every time. Extracted from the
-SAGIP PH project after it produced one real skill end-to-end through this
-pipeline (3 revision rounds before approval).
+A Claude Code plugin bundling a full five-role build team (orchestrator,
+planner, developer, tester, reviewer) plus a skill-proposal/review/promotion
+pipeline that lets that team turn recurring or high-risk work into reusable,
+reviewed skills instead of re-solving the same problem from scratch every
+time. Extracted and generalized from the SAGIP PH project, which produced
+one real skill end-to-end through this pipeline (3 revision rounds before
+approval) using this exact agent team.
 
 ## What's in the plugin
 
+- `agents/orchestrator.md` — drives a task end-to-end by delegating to
+  planner/developer/tester/reviewer, gates progress on tester+reviewer
+  sign-off, maintains `PROGRESS.md` and `agent_log.jsonl`, and is the sole
+  agent allowed to promote an approved skill candidate.
+- `agents/planner.md` — produces an implementation plan before code is
+  written, for tasks non-trivial enough to need a design pass. Read-only.
+- `agents/developer.md` — implements one phase/task's code at a time. Also
+  drafts skill candidates when asked (renamed from `senior-engineer` in the
+  original SAGIP PH project — generic role name for portability).
+- `agents/tester.md` — writes/runs tests, proves acceptance criteria with
+  real command output, not assertions. Also validates skill candidates.
+- `agents/reviewer.md` — read-only review of a diff against the project's
+  spec and any declared safety rules. Reports findings, never edits.
+- `agents/skill-reviewer.md` — a separate, narrower read-only agent that
+  returns APPROVED / REVISE / REJECT on a candidate skill. Never edits or
+  promotes.
 - `skills/skill-factory/` — meta-skill: searches for existing coverage,
   proposes, and drafts a candidate skill. Never promotes.
-- `agents/skill-reviewer.md` — read-only agent that returns
-  APPROVED / REVISE / REJECT on a candidate. Never edits or promotes.
 - `hooks/hooks.json` — a `SubagentStop` hook that silently prompts a
   lead/coordinating agent to run the retrospective check after a task
   finishes (see `hooks/skill-retrospective.md` reference below).
+
+All five build-team agents are generic — they read a project's own spec
+file, CLAUDE.md, and PROGRESS.md at runtime rather than hardcoding any
+project's specific tech stack, schema, or domain rules. Point them at a new
+project and they adapt to whatever spec/conventions they find there.
 
 ## What you set up per-project (not shipped by the plugin, since it's
 ## project-specific)
@@ -33,8 +54,9 @@ pipeline (3 revision rounds before approval).
    cp <plugin>/memory-templates/skill-registry.yaml .claude/memory/skill-registry.yaml
    ```
 
-3. **Paste the policy section** from `CLAUDE-SNIPPET.md` into your project's
-   CLAUDE.md, filling in your own agent names where bracketed.
+3. **Paste the policy sections** from `CLAUDE-SNIPPET.md` into your project's
+   CLAUDE.md — written for this plugin's bundled agent names, edit if you're
+   using a different team.
 
 4. **Narrow the hook's matcher** (important — avoids noise). The bundled
    `hooks/hooks.json` matches every `SubagentStop` event and relies on the
