@@ -1,0 +1,13 @@
+# Registry of approved project skills (.claude/skills/<name>/SKILL.md).
+# Updated ONLY when promoting a skill-reviewer-approved candidate out of
+# .claude/skills/candidates/. Nothing else should edit this file.
+#
+# Each entry:
+#   name: matches the skill's directory name under .claude/skills/
+#   status: approved | deprecated
+#   owner: who proposed/drafted it (agent name or "user")
+#   version: bump on any content change to an approved skill
+#   approved_date: YYYY-MM-DD, when skill-reviewer returned APPROVED
+#   proposal: path to the originating .claude/skill-proposals/<name>.md
+#   evidence: one-line summary of the recurring/high-risk workflow it addresses
+skills: []

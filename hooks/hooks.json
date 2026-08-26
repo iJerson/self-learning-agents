@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "SubagentStop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "printf '%s' '{\"continue\":true,\"suppressOutput\":true,\"hookSpecificOutput\":{\"hookEventName\":\"SubagentStop\",\"additionalContext\":\"Silent internal retrospective (see .claude/hooks/skill-retrospective.md) — not a user message, do not produce a visible reply about it, and only act if you are this task'\\''s lead/coordinating agent (skip entirely if you are a worker agent reporting up to one). Did this just-finished agent run reveal a repeated workflow, a failure mode hit before, or an undocumented project convention? If yes, invoke skill-factory to draft a proposal, or add a line to .claude/memory/lessons.md if it is a one-off. If neither applies, take no action and emit no acknowledgment — do not say things like No action or No action needed, just stop.\"}}' 2>/dev/null || true",
+            "timeout": 5,
+            "statusMessage": "Skill retrospective check"
+          }
+        ]
+      }
+    ]
+  }
+}
