@@ -126,6 +126,13 @@ const activeEdges = new Map();
 let beams = [];
 
 const HUB = 'orchestrator';
+// Safety net: a dispatch without a matching terminal `result` event (a
+// logging gap, not a code path we should assume is impossible) would
+// otherwise leave its beam pulsing "active" forever, misrepresenting the
+// team as still waiting on a worker that actually finished or was
+// abandoned long ago. Auto-expire any edge that's gone this long with no
+// update, rather than trusting the log to always close what it opens.
+const STALE_EDGE_MS = 10 * 60 * 1000;
 
 function ensureNode(name) {
   if (nodes.has(name)) return nodes.get(name);
@@ -149,7 +156,15 @@ function layoutNodes() {
   });
 }
 
-function edgeKey(taskId, worker) { return taskId + '|' + worker; }
+// Keyed by worker alone, not task_id+worker. Orchestrators routinely split,
+// rename, or reuse task_ids across retries/reconciliation (observed in real
+// logs: a narrower re-dispatch under a new task_id whose actual completion
+// gets logged under the original task_id) — keying on task_id made an edge
+// permanently unclosable whenever that happened, since the closing event's
+// task_id never matched the one that opened it. A worker can only sensibly
+// be "active" on one thing from this orchestrator's point of view anyway,
+// so any terminal event from that worker closes whatever's currently open.
+function edgeKey(worker) { return worker; }
 
 function otherParty(ev) { return ev.from === HUB ? ev.to : ev.from; }
 
@@ -169,12 +184,16 @@ function applyEvent(ev) {
   lastEventAt = performance.now();
 
   const worker = otherParty(ev);
-  const key = edgeKey(ev.task_id, worker);
+  const key = edgeKey(worker);
 
-  // Self-referential events (from === to, e.g. "orchestrator" or "ledger"
-  // noting its own progress) are internal bookkeeping, not real inter-agent
-  // communication — never arm a beam for them, only log + flash the node.
-  const isSelfEvent = ev.from === ev.to;
+  // Self-referential events (from === to, e.g. "orchestrator" noting its own
+  // progress) are internal bookkeeping, not real inter-agent communication —
+  // never arm a beam for them, only log + flash the node. "ledger" is the
+  // same story even though from/to differ ("orchestrator" -> "ledger"): it's
+  // not a live agent that ever replies with its own "result" event, so
+  // arming a real edge for it can never be closed the normal way and gets
+  // permanently stuck. Treat any event touching "ledger" as bookkeeping too.
+  const isSelfEvent = ev.from === ev.to || ev.from === 'ledger' || ev.to === 'ledger';
   if (!isSelfEvent && (ev.event === 'dispatch' || (ev.event === 'claim' && ev.status === 'in_progress'))) {
     activeEdges.set(key, { from: HUB, to: worker, taskId: ev.task_id, worker, color: colorFor(worker), since: performance.now() });
   }
@@ -269,6 +288,10 @@ function draw(now) {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.clearRect(0, 0, r.width, r.height);
 
+  for (const [key, edge] of activeEdges) {
+    if (now - edge.since > STALE_EDGE_MS) activeEdges.delete(key);
+  }
+
   emptyEl.style.display = (activeEdges.size === 0 && beams.length === 0) ? 'flex' : 'none';
 
   // dormant hub-spoke lines (very faint) so the topology is always legible
@@ -316,7 +339,7 @@ function draw(now) {
       ? activeEdges.size > 0
       : [...activeEdges.values()].some(e => e.worker === n.name);
 
-    if (n.glow > 0) n.glow = Math.max(0, n.glow - 0.02);
+    if (n.glow > 0) n.glow = Math.max(0, n.glow - 0.005);
 
     const baseR = isHub ? 22 : 16;
     const glowColor = n.flashColor || n.color;
@@ -332,8 +355,8 @@ function draw(now) {
     } else {
       ctx.fillStyle = '#0e1621';
       ctx.strokeStyle = n.color;
-      ctx.globalAlpha = 0.6;
-      ctx.lineWidth = 1.5;
+      ctx.globalAlpha = 0.85;
+      ctx.lineWidth = 2;
       ctx.beginPath(); ctx.arc(n.x, n.y, baseR, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
       ctx.globalAlpha = 1;
     }
