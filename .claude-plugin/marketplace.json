@@ -1,0 +1,13 @@
+{
+  "name": "self-learning-agents-marketplace",
+  "owner": {
+    "name": "Jerson Castro"
+  },
+  "plugins": [
+    {
+      "name": "self-learning-agents",
+      "source": "./",
+      "description": "Skill-proposal/review/promotion pipeline for a self-improving Claude Code agent team."
+    }
+  ]
+}
