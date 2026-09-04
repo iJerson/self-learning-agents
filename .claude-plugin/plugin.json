@@ -1,7 +1,7 @@
 {
   "name": "self-learning-agents",
   "description": "A five-role build team (orchestrator, planner, developer, tester, reviewer) plus a skill-proposal/review/promotion pipeline and lessons/registry memory convention that lets the team turn recurring or high-risk work into reusable, reviewed skills instead of re-solving the same problem from scratch each time.",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "author": {
     "name": "Jerson Castro"
   }
