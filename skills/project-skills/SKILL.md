@@ -18,18 +18,34 @@ directory layout, existing top-level `.claude/skills/<name>/`,
 `.claude/skill-proposals/` already pending. Anything already covered there —
 skip, don't re-propose.
 
-## 2. Look for skill-shaped material
+Then read the actual source, not just config: open several real feature
+implementations (a handful of components/modules/endpoints across different
+parts of the codebase) and compare them. Two or three similar files told the
+same story is how you find a house pattern — a single file never proves one.
 
-A candidate is worth drafting when it's non-obvious, project-specific, and
-would save a future agent from re-deriving it or getting it wrong:
+## 2. Weight this toward "how we build here", not just "what breaks here"
+
+The goal is skills a future agent uses to *write new code the way this
+project already does it* — architecture and tech-stack conventions are the
+priority, not just pitfalls to dodge. For each of this project's actual
+stack pieces (framework, state management, styling, API/data layer, test
+setup, etc.), ask: does this project use it in a specific, repeated way that
+isn't just "read the library's own docs"? If yes, that's a candidate:
+- the project's architecture/module boundaries (how a feature is laid out
+  across files/layers, naming and folder conventions, where a new one of
+  X goes)
+- a tech-stack idiom specific to this codebase (the house pattern for state
+  management, API calls, styling, forms, error handling, etc. — not the
+  library's generic tutorial pattern)
 - a build/test/lint/deploy sequence with unusual steps, ordering, or flags
 - a custom script or internal tool with real usage rules (not just `--help`)
-- a framework/library used in a project-specific way (a house pattern that
-  differs from that library's own docs)
 - domain or data-model rules that aren't enforced by the type system
   (invariants, forbidden states, compliance/security constraints)
 - a recurring gotcha visible in comments, commit messages, or docs (e.g. "do
-  not do X, it broke prod") even if you can't confirm a 3x recurrence
+  not do X, it broke prod") — worth capturing, but don't let this category
+  crowd out the architecture/pattern ones above; a shortlist that's all
+  troubleshooting and no "how we build a new feature here" has under-surveyed
+  the source code in step 1
 
 Do NOT draft a skill for anything generic (standard framework usage, common
 CLI commands, one-off scripts with no real rules) — that's noise, not a
