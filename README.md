@@ -28,6 +28,15 @@ approval) using this exact agent team.
   promotes.
 - `skills/skill-factory/` — meta-skill: searches for existing coverage,
   proposes, and drafts a candidate skill. Never promotes.
+- `commands/setup.toml` — `/setup`: one-time per-project setup, stages
+  directories, copies memory templates, pastes the CLAUDE.md policy, and
+  asks (default no) whether to copy `agent-viz.html`.
+- `commands/project-skills.toml` — `/project-skills`: proactively scans the
+  codebase itself (build/test/deploy scripts, conventions, gotchas) for
+  skill-worthy material and drafts candidates for review — unlike
+  `skill-factory`, which only fires reactively on runtime recurrence noticed
+  mid-task. Always confirms scope with the user before drafting, and drafts
+  only under `.claude/skills/candidates/`, never top-level.
 - `hooks/hooks.json` — a `SubagentStop` hook that silently prompts a
   lead/coordinating agent to run the retrospective check after a task
   finishes (see `hooks/skill-retrospective.md` reference below).
@@ -55,18 +64,22 @@ project and they adapt to whatever spec/conventions they find there.
    ```
    Or, once pushed to a git remote, replace the local path with the repo URL.
 
-2. **Create the staging directories** in your project:
+2. **Run `/setup`.** Does steps 2-4 below for you: creates the staging
+   directories, copies the memory templates (skipping any that already
+   exist), pastes `CLAUDE-SNIPPET.md`'s policy sections into your project's
+   CLAUDE.md (skipping if already present), and asks whether to copy
+   `agent-viz.html` (default no). To do it by hand instead:
    ```
    mkdir -p .claude/skill-proposals .claude/skills/candidates .claude/memory
    cp <plugin>/memory-templates/lessons.md .claude/memory/lessons.md
    cp <plugin>/memory-templates/skill-registry.yaml .claude/memory/skill-registry.yaml
    ```
+   then paste the policy sections from `CLAUDE-SNIPPET.md` into your
+   project's CLAUDE.md — written for this plugin's bundled agent names, edit
+   if you're using a different team.
 
-3. **Paste the policy sections** from `CLAUDE-SNIPPET.md` into your project's
-   CLAUDE.md — written for this plugin's bundled agent names, edit if you're
-   using a different team.
-
-4. **Narrow the hook's matcher** (important — avoids noise). The bundled
+3. **Narrow the hook's matcher** (important — avoids noise; `/setup` only
+   reminds you, it doesn't do this step). The bundled
    `hooks/hooks.json` matches every `SubagentStop` event and relies on the
    prompt telling non-lead agents to skip it. That works but is noisier than
    necessary. Once you know which agent is your project's lead/coordinator
@@ -77,11 +90,11 @@ project and they adapt to whatever spec/conventions they find there.
    every agent stop (not just the lead's) roughly quadrupled hook firings
    for no benefit, since only the lead agent can act on the retrospective.
 
-5. **Optionally copy `agent-viz.html`** into your project root if you want
-   the live visualizer — it's not auto-installed by the plugin since it's a
+4. **Optionally copy `agent-viz.html`** into your project root if you want
+   the live visualizer — `/setup` asks this too (default no), since it's a
    standalone dev tool, not agent/skill/hook config.
 
-6. **Promotion is manual by design.** No agent — including the ones in this
+5. **Promotion is manual by design.** No agent — including the ones in this
    plugin — moves a candidate to a top-level `.claude/skills/<name>/`
    automatically. Only your project's lead/coordinating agent (or a human)
    does that, after `skill-reviewer` returns APPROVED. This keeps skill
