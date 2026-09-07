@@ -28,15 +28,7 @@ approval) using this exact agent team.
   promotes.
 - `skills/skill-factory/` — meta-skill: searches for existing coverage,
   proposes, and drafts a candidate skill. Never promotes.
-- `commands/setup.toml` — `/setup`: one-time per-project setup, stages
-  directories, copies memory templates, pastes the CLAUDE.md policy, and
-  asks (default no) whether to copy `agent-viz.html`.
-- `commands/project-skills.toml` — `/project-skills`: proactively scans the
-  codebase itself (build/test/deploy scripts, conventions, gotchas) for
-  skill-worthy material and drafts candidates for review — unlike
-  `skill-factory`, which only fires reactively on runtime recurrence noticed
-  mid-task. Always confirms scope with the user before drafting, and drafts
-  only under `.claude/skills/candidates/`, never top-level.
+- `commands/` — see [Commands](#commands) below.
 - `hooks/hooks.json` — a `SubagentStop` hook that silently prompts a
   lead/coordinating agent to run the retrospective check after a task
   finishes (see `hooks/skill-retrospective.md` reference below).
@@ -53,6 +45,20 @@ All five build-team agents are generic — they read a project's own spec
 file, CLAUDE.md, and PROGRESS.md at runtime rather than hardcoding any
 project's specific tech stack, schema, or domain rules. Point them at a new
 project and they adapt to whatever spec/conventions they find there.
+
+## Commands
+
+- **`/setup`** — one-time per-project setup: stages `.claude/skill-proposals`,
+  `.claude/skills/candidates`, and `.claude/memory`, copies the memory
+  templates (skipping any that already exist), pastes `CLAUDE-SNIPPET.md`'s
+  policy sections into your project's CLAUDE.md (skipping if already
+  present), and asks whether to copy `agent-viz.html` (default no).
+- **`/project-skills`** — proactively scans the codebase itself
+  (build/test/deploy scripts, conventions, gotchas) for skill-worthy
+  material and drafts candidates for review — unlike `skill-factory`, which
+  only fires reactively on runtime recurrence noticed mid-task. Always
+  confirms scope with the user before drafting, and drafts only under
+  `.claude/skills/candidates/`, never top-level.
 
 ## What you set up per-project (not shipped by the plugin, since it's
 ## project-specific)
