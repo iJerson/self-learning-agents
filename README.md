@@ -28,7 +28,7 @@ approval) using this exact agent team.
   promotes.
 - `skills/skill-factory/` — meta-skill: searches for existing coverage,
   proposes, and drafts a candidate skill. Never promotes.
-- `commands/` — see [Commands](#commands) below.
+- `skills/setup/` and `skills/project-skills/` — see [Skills](#skills) below.
 - `hooks/hooks.json` — a `SubagentStop` hook that silently prompts a
   lead/coordinating agent to run the retrospective check after a task
   finishes (see `hooks/skill-retrospective.md` reference below).
@@ -46,7 +46,12 @@ file, CLAUDE.md, and PROGRESS.md at runtime rather than hardcoding any
 project's specific tech stack, schema, or domain rules. Point them at a new
 project and they adapt to whatever spec/conventions they find there.
 
-## Commands
+## Skills
+
+Besides `skill-factory`, this plugin ships two more skills invoked the same
+way, by name (`/setup`, `/project-skills`) — Claude Code plugins don't
+support a separate `commands/` component type, so these are plain skills
+under `skills/<name>/SKILL.md`, not a distinct "commands" mechanism.
 
 - **`/setup`** — one-time per-project setup: stages `.claude/skill-proposals`,
   `.claude/skills/candidates`, and `.claude/memory`, copies the memory

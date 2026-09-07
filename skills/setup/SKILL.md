@@ -1,6 +1,8 @@
-description = "One-time per-project setup: stage directories, copy memory templates, paste CLAUDE.md policy, optionally copy agent-viz.html"
+---
+name: setup
+description: One-time per-project setup for this plugin — stages directories, copies memory templates, pastes the CLAUDE.md policy, and optionally copies agent-viz.html. Use when the user runs /setup or asks to set up this plugin in a project.
+---
 
-prompt = """
 Set up this plugin (self-learning-agents) in the current project. Plugin root: `${CLAUDE_PLUGIN_ROOT}`.
 
 Do the following, in order:
@@ -30,4 +32,3 @@ Do the following, in order:
 
 Report back concisely what was created, what was skipped (and why), and whether agent-viz.html
 was copied.
-"""

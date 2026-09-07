@@ -1,6 +1,8 @@
-description = "Scan this codebase for skill-worthy conventions and draft candidate skills for review (bootstrap, not the reactive skill-factory path)"
+---
+name: project-skills
+description: Proactively scans a codebase (build/test/deploy scripts, conventions, gotchas) for skill-worthy material and drafts candidate skills for review, complementing skill-factory's reactive recurrence-triggered path. Use when the user runs /project-skills or asks to bootstrap project skills from the existing codebase.
+---
 
-prompt = """
 Bootstrap skill candidates from this project's own codebase — a one-time (or
 periodic) proactive scan, distinct from `skill-factory`'s reactive path
 (which only fires on runtime recurrence noticed mid-task). Here the evidence
@@ -37,7 +39,7 @@ skill.
 
 Present the shortlist (name + one-line rationale each) via AskUserQuestion
 (multiSelect) and let the user pick which candidates to actually draft.
-Never draft unconfirmed candidates — this command can surface many
+Never draft unconfirmed candidates — this skill can surface many
 candidates on a large repo and the user should control how many land as
 files.
 
@@ -63,7 +65,7 @@ Create staging directories if missing: `.claude/skill-proposals/`,
 
 Same chain as everywhere else in this plugin: only `skill-reviewer`
 approves, only the project's lead/coordinating agent promotes a candidate
-to a top-level `.claude/skills/<name>/`. This command only drafts — it does
+to a top-level `.claude/skills/<name>/`. This skill only drafts — it does
 not install dependencies, change permissions, touch hooks, or move anything
 out of `candidates/`.
 
@@ -72,4 +74,3 @@ out of `candidates/`.
 List what was drafted (proposal + candidate paths) and what was skipped as
 already-covered or not skill-worthy, then remind the user to run
 `skill-reviewer` before anything gets promoted.
-"""
