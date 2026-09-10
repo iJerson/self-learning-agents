@@ -35,6 +35,13 @@ approval) using this exact agent team.
   findings, pass/fail) must be written to an exact file path and read back,
   never trusted from the notification text alone. Promoted here after
   recurring independently in more than one project using this plugin.
+- `skills/async-dispatch-patience/` — the sibling half of the same
+  reliability concern: what does and doesn't count as evidence that an
+  async dispatch has stalled or failed, before you redispatch or escalate.
+  A static transcript, a `SubagentStop` firing, or a missing file on first
+  check are NOT reliable stall signals — only the real
+  `<task-notification status="completed">` event is. Promoted here for the
+  same reason as the skill above.
 - `hooks/hooks.json` — a `SubagentStop` hook that silently prompts a
   lead/coordinating agent to run the retrospective check after a task
   finishes (see `hooks/skill-retrospective.md` reference below).
