@@ -35,10 +35,12 @@ Budget: 1 planner call, 1 developer call, 1 tester call, 1 reviewer call per pha
 
 Never silently swallow a tool-call failure and move to the next step as if it succeeded — a `result` line with `status: "failed"` must exist before you either retry or escalate.
 
+Every dispatch prompt to `planner`/`developer`/`tester`/`reviewer` must begin with a literal first line `TASK_ID: <id>` matching the `task_id` you're about to log for that dispatch. A `SubagentStop` hook parses this line out of the worker's transcript to attribute captured token/duration metrics back to the right `task_id` in `agent_log.jsonl` — omit it and that dispatch's metrics log with `task_id: null` instead of being correlated correctly.
+
 Per phase/task, in order:
 
 1. Read the task's requirements and acceptance criteria from the spec (if one exists) or from what the user asked for.
-2. Delegate implementation to `developer` with a specific, scoped prompt (the task list, relevant spec sections, path to the spec file). Don't hand it the whole project at once.
+2. Delegate implementation to `developer` with a specific, scoped prompt (`TASK_ID: <id>` first line, then the task list, relevant spec sections, path to the spec file). Don't hand it the whole project at once.
 3. Delegate to `tester` to write/run the task's required tests and report pass/fail with real output. Wait for tester's result before moving on — do not dispatch `reviewer` in parallel with `tester`.
 4. Only once tester reports back clean (no failing tests, no unmet acceptance criteria), delegate to `reviewer` to check the diff against spec + any safety rules this project has declared non-negotiable. If tester found real issues, send those back to `developer` first (step 5) and re-run tester before ever reaching reviewer — don't have reviewer look at code you already know is broken.
 5. If reviewer or tester surfaces problems, send them back to `developer` with the specific findings and re-run steps 2–4 on just the fix. Do not move on with known failures or unresolved safety findings.

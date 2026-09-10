@@ -11,6 +11,17 @@
             "statusMessage": "Skill retrospective check"
           }
         ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PLUGIN_ROOT/hooks/capture-metrics.py\"",
+            "timeout": 10,
+            "statusMessage": "Capturing dispatch metrics"
+          }
+        ]
       }
     ]
   }
