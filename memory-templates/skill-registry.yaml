@@ -1,13 +1,61 @@
-# Registry of approved project skills (.claude/skills/<name>/SKILL.md).
-# Updated ONLY when promoting a skill-reviewer-approved candidate out of
-# .claude/skills/candidates/. Nothing else should edit this file.
+# Registry of project skills.
+#
+# status: approved  — promoted out of .claude/skills/candidates/ after a
+#                      skill-reviewer APPROVED verdict + fresh human go-ahead.
+#                      Only the promotion flow in agents/orchestrator.md may
+#                      add/edit these entries.
+#          builtin   — ships with this plugin (skills/<name>/SKILL.md), never
+#                       went through the candidate/review/promotion pipeline.
+#                       No proposal/approved_date; not gated by human_approval.
+#          deprecated
 #
 # Each entry:
-#   name: matches the skill's directory name under .claude/skills/
-#   status: approved | deprecated
-#   owner: who proposed/drafted it (agent name or "user")
-#   version: bump on any content change to an approved skill
-#   approved_date: YYYY-MM-DD, when skill-reviewer returned APPROVED
-#   proposal: path to the originating .claude/skill-proposals/<name>.md
+#   name: matches the skill's directory name
+#   status: approved | builtin | deprecated
+#   owner: who proposed/drafted it (agent name, "user", or "plugin" for builtin)
+#   version: bump on any content change
+#   approved_date: YYYY-MM-DD, when skill-reviewer returned APPROVED (approved only; omit for builtin)
+#   proposal: path to the originating .claude/skill-proposals/<name>.md (approved only; omit for builtin)
 #   evidence: one-line summary of the recurring/high-risk workflow it addresses
-skills: []
+skills:
+  - name: async-dispatch-patience
+    status: builtin
+    owner: plugin
+    version: 1.11.2
+    evidence: >-
+      Prevents an orchestrator from declaring a background subagent dispatch
+      stalled/failed on unreliable early signals (static transcript,
+      SubagentStop firing, missing file on first check) and racing a
+      redundant retry against a good in-flight result.
+  - name: async-subagent-file-handoff
+    status: builtin
+    owner: plugin
+    version: 1.11.2
+    evidence: >-
+      Structured Write-first report-back pattern for async subagent
+      dispatches (developer/tester/reviewer/skill-reviewer/trajectory-judge)
+      needing a verdict/findings/pass-fail, since the task-notification
+      result field alone is unreliable for that.
+  - name: project-skills
+    status: builtin
+    owner: plugin
+    version: 1.11.2
+    evidence: >-
+      Proactively scans a codebase for skill-worthy material and drafts
+      candidate skills, complementing skill-factory's reactive
+      recurrence-triggered path.
+  - name: setup
+    status: builtin
+    owner: plugin
+    version: 1.11.2
+    evidence: >-
+      One-time per-project setup for this plugin: stages directories, copies
+      memory templates, pastes the CLAUDE.md policy, optionally copies
+      agent-viz.html.
+  - name: skill-factory
+    status: builtin
+    owner: plugin
+    version: 1.11.2
+    evidence: >-
+      Proposes and drafts a candidate project skill when a recurring or
+      high-risk workflow needs reusable guidance.

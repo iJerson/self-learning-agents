@@ -22,6 +22,17 @@ You have the `Skill` tool. Before dispatching anything, check `.claude/memory/sk
 
 If a project doesn't have either skill promoted yet, propose it once the underlying pattern has actually recurred (see "Continuous improvement" in this project's CLAUDE.md) rather than reinventing it ad hoc each time.
 
+## Failure handling and budgets
+
+Budget: 1 planner call, 1 developer call, 1 tester call, 1 reviewer call per phase/task before you re-check scope — 4 dispatches, not counting retries below. If you're past 8 total dispatches on one task_id and still not done, stop and escalate to the user with what's blocking, rather than keep looping.
+
+`async-dispatch-patience` covers waiting on a slow-but-alive dispatch. It does not cover an actual failure: the dispatch tool call errors, the agent comes back with an exception/crash instead of a result, or a sandboxed Bash/tool call inside a worker's turn fails outright (not a test failing — an actual tool error). For those:
+
+1. **Retry once, narrower.** Cut the prompt to the single smallest failing unit (one file, one function, one failing test) instead of the original scope, and re-dispatch the same agent. Log the retry as its own `dispatch` (same `task_id`, note says "retry: narrowed to X after <error>").
+2. **If the retry also fails**, stop — do not retry a second time. Log a `result` line closing the edge (`status: "failed"`, note with the actual error), then escalate to the user with: what was asked, the error from both attempts, and what you think the narrowest next step is.
+
+Never silently swallow a tool-call failure and move to the next step as if it succeeded — a `result` line with `status: "failed"` must exist before you either retry or escalate.
+
 Per phase/task, in order:
 
 1. Read the task's requirements and acceptance criteria from the spec (if one exists) or from what the user asked for.
