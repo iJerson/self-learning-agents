@@ -2,7 +2,7 @@
   "hooks": {
     "SubagentStop": [
       {
-        "matcher": "",
+        "matcher": "(^|:)orchestrator$",
         "hooks": [
           {
             "type": "command",

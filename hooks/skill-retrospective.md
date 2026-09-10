@@ -26,8 +26,9 @@ Concretely, look for:
 
 ## Tuning the hook
 
-The bundled hook matches every `SubagentStop` event and relies on its own
-prompt text to tell non-lead agents to skip it. If you find it's noisy or
-producing spurious "No action." trailing turns, narrow `hooks.json`'s
-`matcher` to your project's actual lead/coordinating agent's name in your
-own `.claude/settings.json` copy — see the main README's setup step 4.
+The bundled hook's `matcher` is already narrowed to `(^|:)orchestrator$` —
+it only fires when the `orchestrator` subagent itself stops, not on every
+worker (`planner`/`developer`/`tester`/`reviewer`) it dispatches. If your
+project's lead/coordinating agent has a different name, or you still find it
+noisy at that cadence, adjust `hooks.json`'s `matcher` in your own
+`.claude/settings.json` copy — see the main README's setup step 4.
