@@ -21,6 +21,11 @@ times, created repeated errors, or requires non-obvious project knowledge.
    say both what it does and when Claude should load it.
 4. Add two representative validation tasks to the candidate draft (what a
    human or another agent could run to confirm the skill actually works).
+   After writing, `ls .claude/skills/candidates/<name>/SKILL.md` to confirm
+   it landed exactly there — not `.claude/skills/<name>/` (the live,
+   auto-discovered path — writing there accidentally auto-activates an
+   unreviewed skill) and not this plugin's own top-level `skills/<name>/`.
+   Fix it yourself before reporting done if the check shows the wrong path.
 5. Never promote the candidate, install dependencies, change permissions,
    or create/modify hooks. Promotion is gated on `skill-reviewer`'s
    approval — see this project's CLAUDE.md "Continuous improvement"
