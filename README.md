@@ -29,6 +29,12 @@ approval) using this exact agent team.
 - `skills/skill-factory/` — meta-skill: searches for existing coverage,
   proposes, and drafts a candidate skill. Never promotes.
 - `skills/setup/` and `skills/project-skills/` — see [Skills](#skills) below.
+- `skills/async-subagent-file-handoff/` — the dispatch pattern every worker
+  agent in this plugin needs: an async subagent's task-notification
+  `<result>` field is unreliable, so a structured report (a verdict,
+  findings, pass/fail) must be written to an exact file path and read back,
+  never trusted from the notification text alone. Promoted here after
+  recurring independently in more than one project using this plugin.
 - `hooks/hooks.json` — a `SubagentStop` hook that silently prompts a
   lead/coordinating agent to run the retrospective check after a task
   finishes (see `hooks/skill-retrospective.md` reference below).
