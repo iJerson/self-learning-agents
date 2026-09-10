@@ -102,10 +102,38 @@ def check_no_premature_done(events):
     return violations
 
 
+def check_promotion_needs_approval(events):
+    """A 'promotion' event on a given task_id must be preceded by a
+    'human_approval' event on that same task_id (orchestrator.md's
+    "Skill promotion" section: an APPROVED verdict is necessary but never
+    sufficient — promotion requires a distinct, logged human go-ahead).
+
+    Only checks logs that actually use the 'promotion'/'human_approval'
+    event types — older logs predating this schema addition won't have
+    either, and are silently skipped rather than flagged, since this
+    invariant didn't exist yet when they were written."""
+    violations = []
+    approved_task_ids = set()
+
+    for ev in events:
+        if ev.get("event") == "human_approval" and ev.get("status") == "done":
+            approved_task_ids.add(ev.get("task_id"))
+        elif ev.get("event") == "promotion":
+            task_id = ev.get("task_id")
+            if task_id not in approved_task_ids:
+                violations.append(
+                    f"line {ev['_line']}: 'promotion' event for task "
+                    f"'{task_id}' has no preceding 'human_approval' event "
+                    f"on the same task_id"
+                )
+    return violations
+
+
 CHECKS = [
     ("closed_dispatches", check_closed_dispatches),
     ("gate_ordering", check_gate_ordering),
     ("no_premature_done", check_no_premature_done),
+    ("promotion_needs_approval", check_promotion_needs_approval),
 ]
 
 
