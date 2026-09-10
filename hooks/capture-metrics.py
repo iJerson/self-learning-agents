@@ -128,9 +128,16 @@ def main():
         return
 
     transcript_path = payload.get("transcript_path")
-    subagent_type = payload.get("subagent_type") or "unknown"
+    subagent_type = payload.get("subagent_type")
 
-    if not transcript_path:
+    # No subagent_type means this SubagentStop-shaped event isn't actually a
+    # subagent completion we can attribute — in practice this fires on the
+    # coordinating session's own transcript (which keeps legitimately
+    # growing every turn, so the incremental dedup above can't suppress it
+    # the way it does true duplicate re-fires). A metrics line with no idea
+    # which agent it's for is worse than no line at all — skip silently
+    # rather than logging it as "unknown".
+    if not transcript_path or not subagent_type:
         emit_and_exit()
         return
 
