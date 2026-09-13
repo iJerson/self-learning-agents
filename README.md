@@ -14,6 +14,19 @@ approval) using this exact agent team.
   planner/developer/tester/reviewer, gates progress on tester+reviewer
   sign-off, maintains `PROGRESS.md` and `agent_log.jsonl`, and is the sole
   agent allowed to promote an approved skill candidate.
+- `playbooks/<agent-name>/` — one numbered-steps file per task shape, read
+  by that agent before dispatching or implementing anything.
+  `playbooks/orchestrator/` ships four: `investigation.md`, `bug-fix.md`,
+  `feature.md`, `refactoring.md`. `playbooks/developer/` ships four more:
+  `implementation.md` (default), `bug-fix.md` (reproduce first, trace to
+  root cause — not just patch the symptom), `frontend-ui.md`,
+  `skill-candidate-draft.md`. Each playbook states only what's different
+  about its task shape; the shared mechanics (logging, hard gates, failure
+  handling, skill promotion for orchestrator; safety rule, skills policy
+  for developer) live once in the owning agent's own `.md` file. Add more
+  files under an agent's directory as new task shapes recur, and add a
+  sibling `playbooks/<other-agent>/` directory if another agent in this
+  plugin needs its own set — rather than growing any agent's prompt itself.
 - `agents/planner.md` — produces an implementation plan before code is
   written, for tasks non-trivial enough to need a design pass. Read-only.
 - `agents/developer.md` — implements one phase/task's code at a time. Also
@@ -42,6 +55,12 @@ approval) using this exact agent team.
   check are NOT reliable stall signals — only the real
   `<task-notification status="completed">` event is. Promoted here for the
   same reason as the skill above.
+- `skills/lessons-audit/` — rereads `.claude/memory/lessons.md` for entries
+  that now meet skill-factory's promotion bar (recurred 3+ times,
+  error-prone, or non-obvious/tool-specific) and hands each one to
+  `skill-factory` to draft as a candidate. `lessons.md` says qualifying
+  entries should be promoted "instead of leaving it here indefinitely," but
+  nothing reread the file to check until this skill existed.
 - `hooks/hooks.json` — a `SubagentStop` hook that silently prompts a
   lead/coordinating agent to run the retrospective check after a task
   finishes (see `hooks/skill-retrospective.md` reference below).
